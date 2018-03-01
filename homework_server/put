@@ -1,0 +1,52 @@
+#!/usr/bin/python
+import sys
+import hashlib
+import os.path
+import time
+#from __future__ import print_function
+
+def WriteDebugFile(level,exstring):
+	debugpath = "/home/deneme1"
+	directory = "/debug"
+	if not os.path.exists(debugpath + directory):
+		os.makedirs(debugpath + directory)
+	timestr = time.strftime("%Y%m%d-%H%M%S")
+	fdebug = open(debugpath + directory + "/" + "PUT" + "-" +  level + "-" + timestr, "w+")
+	fdebug.write(exstring)
+	fdebug.close()	
+
+def md5(fname):
+	hash_md5 = hashlib.md5()
+	with open(fname, "rb") as f:
+		for chunk in iter(lambda: f.read(4096), b""):
+			hash_md5.update(chunk)
+	return hash_md5.hexdigest()
+
+path = "/home/deneme1/Desktop/py_app_files/"
+
+#buf = raw_input()
+buf = sys.stdin.readline().strip()
+try:
+	if len(buf):
+		buflist = buf.split('#')
+		file_name = buflist[0]
+		clientmd5 = buflist[1]
+		data = buflist[2]
+		f = open(path + file_name, 'w+')
+		f.write(data)
+		f.close()
+		md5local = md5(path + file_name)
+		#print('MD5 Local: ' + md5local)
+		#print('MD5 Sent: ' + clientmd5)
+		if md5local == clientmd5:
+			WriteDebugFile("20", buf + ": File requested was saved!")
+			print 0
+		else:
+			WriteDebugFile("30", buf + ": File requested was saved but MD5 mismatch!")
+			print -1
+		sys.stdout.flush().strip()
+except Exception as ex:
+	WriteDebugFile("40",str(ex))
+
+
+

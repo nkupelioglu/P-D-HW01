@@ -1,0 +1,38 @@
+#!/usr/bin/python
+from os import listdir
+import os.path
+import time
+from os import remove as rmfile
+import sys
+
+def WriteDebugFile(level,exstring):
+	debugpath = "/home/deneme1"
+	directory = "/debug"
+	if not os.path.exists(debugpath + directory):
+		os.makedirs(debugpath + directory)
+	timestr = time.strftime("%Y%m%d-%H%M%S")
+	fdebug = open(debugpath + directory + "/" + "DELETE" + "-" +  level + "-" + timestr, "w+")
+	fdebug.write(exstring)
+	fdebug.close()	
+
+path = "/home/deneme1/Desktop/py_app_files/"
+#buf = raw_input()
+buf = sys.stdin.readline().strip()
+retval = -1
+try:
+	if len(buf):
+		for f in listdir(path):
+			if os.path.isfile(path + f):
+				if f == buf:
+					rmfile(path + f)
+					retval = 0
+					WriteDebugFile("20",buf + ": File requested was removed!")
+					print retval
+					break;
+	if retval != 0:
+		retval = -1
+		WriteDebugFile("30",buf + ": File requested was not found!")
+		print retval
+	sys.stdout.flush().strip()
+except Exception as ex:
+	WriteDebugFile("40",str(ex))
